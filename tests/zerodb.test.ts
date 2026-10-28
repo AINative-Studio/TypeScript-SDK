@@ -40,7 +40,7 @@ describe('ZeroDBClient', () => {
 
         const response = await zerodbClient.projects.list();
         
-        expect(mockClient.get).toHaveBeenCalledWith('/public/projects?');
+        expect(mockClient.get).toHaveBeenCalledWith('/projects?');
         expect(response).toBe(mockResponse);
       });
 
@@ -50,7 +50,7 @@ describe('ZeroDBClient', () => {
 
         await zerodbClient.projects.list({ limit: 10, offset: 20 });
         
-        expect(mockClient.get).toHaveBeenCalledWith('/public/projects?limit=10&offset=20');
+        expect(mockClient.get).toHaveBeenCalledWith('/projects?limit=10&offset=20');
       });
 
       it('should handle partial pagination options', async () => {
@@ -59,7 +59,7 @@ describe('ZeroDBClient', () => {
 
         await zerodbClient.projects.list({ limit: 5 });
         
-        expect(mockClient.get).toHaveBeenCalledWith('/public/projects?limit=5');
+        expect(mockClient.get).toHaveBeenCalledWith('/projects?limit=5');
       });
     });
 
@@ -71,7 +71,7 @@ describe('ZeroDBClient', () => {
 
         const response = await zerodbClient.projects.create(projectData);
         
-        expect(mockClient.post).toHaveBeenCalledWith('/public/projects', projectData);
+        expect(mockClient.post).toHaveBeenCalledWith('/projects', projectData);
         expect(response).toBe(mockResponse);
       });
     });
@@ -84,7 +84,7 @@ describe('ZeroDBClient', () => {
 
         const response = await zerodbClient.projects.get(projectId);
         
-        expect(mockClient.get).toHaveBeenCalledWith(`/public/projects/${projectId}`);
+        expect(mockClient.get).toHaveBeenCalledWith(`/projects/${projectId}`);
         expect(response).toBe(mockResponse);
       });
     });
@@ -98,7 +98,7 @@ describe('ZeroDBClient', () => {
 
         const response = await zerodbClient.projects.update(projectId, updateData);
         
-        expect(mockClient.put).toHaveBeenCalledWith(`/public/projects/${projectId}`, updateData);
+        expect(mockClient.put).toHaveBeenCalledWith(`/projects/${projectId}`, updateData);
         expect(response).toBe(mockResponse);
       });
     });
@@ -111,7 +111,7 @@ describe('ZeroDBClient', () => {
 
         const response = await zerodbClient.projects.delete(projectId);
         
-        expect(mockClient.delete).toHaveBeenCalledWith(`/public/projects/${projectId}`);
+        expect(mockClient.delete).toHaveBeenCalledWith(`/projects/${projectId}`);
         expect(response).toBe(mockResponse);
       });
     });
@@ -124,7 +124,7 @@ describe('ZeroDBClient', () => {
 
         const response = await zerodbClient.projects.suspend(projectId);
         
-        expect(mockClient.post).toHaveBeenCalledWith(`/public/projects/${projectId}/suspend`);
+        expect(mockClient.post).toHaveBeenCalledWith(`/projects/${projectId}/suspend`);
         expect(response).toBe(mockResponse);
       });
     });
@@ -137,7 +137,7 @@ describe('ZeroDBClient', () => {
 
         const response = await zerodbClient.projects.activate(projectId);
         
-        expect(mockClient.post).toHaveBeenCalledWith(`/public/projects/${projectId}/activate`);
+        expect(mockClient.post).toHaveBeenCalledWith(`/projects/${projectId}/activate`);
         expect(response).toBe(mockResponse);
       });
     });
@@ -152,7 +152,7 @@ describe('ZeroDBClient', () => {
 
         const response = await zerodbClient.database.status(projectId);
         
-        expect(mockClient.get).toHaveBeenCalledWith(`/public/projects/${projectId}/database`);
+        expect(mockClient.get).toHaveBeenCalledWith(`/projects/${projectId}/database`);
         expect(response).toBe(mockResponse);
       });
     });
@@ -165,7 +165,7 @@ describe('ZeroDBClient', () => {
 
         const response = await zerodbClient.database.enable(projectId);
         
-        expect(mockClient.post).toHaveBeenCalledWith(`/public/projects/${projectId}/database`);
+        expect(mockClient.post).toHaveBeenCalledWith(`/projects/${projectId}/database`);
         expect(response).toBe(mockResponse);
       });
     });
@@ -179,7 +179,7 @@ describe('ZeroDBClient', () => {
 
         const response = await zerodbClient.database.updateConfig(projectId, config);
         
-        expect(mockClient.put).toHaveBeenCalledWith(`/public/projects/${projectId}/database`, config);
+        expect(mockClient.put).toHaveBeenCalledWith(`/projects/${projectId}/database`, config);
         expect(response).toBe(mockResponse);
       });
     });
@@ -200,7 +200,7 @@ describe('ZeroDBClient', () => {
         const response = await zerodbClient.vectors.upsert(projectId, vectorData);
         
         expect(mockClient.post).toHaveBeenCalledWith(
-          `/public/projects/${projectId}/database/vectors/upsert`,
+          `/projects/${projectId}/database/vectors/upsert`,
           vectorData
         );
         expect(response).toBe(mockResponse);
@@ -221,7 +221,7 @@ describe('ZeroDBClient', () => {
         const response = await zerodbClient.vectors.search(projectId, searchData);
         
         expect(mockClient.post).toHaveBeenCalledWith(
-          `/public/projects/${projectId}/database/vectors/search`,
+          `/projects/${projectId}/database/vectors/search`,
           searchData
         );
         expect(response).toBe(mockResponse);
@@ -243,7 +243,7 @@ describe('ZeroDBClient', () => {
         const response = await zerodbClient.vectors.batchUpsert(projectId, batchData);
         
         expect(mockClient.post).toHaveBeenCalledWith(
-          `/public/projects/${projectId}/database/vectors/upsert-batch`,
+          `/projects/${projectId}/database/vectors/upsert-batch`,
           batchData.vectors
         );
         expect(response).toBe(mockResponse);
@@ -259,7 +259,7 @@ describe('ZeroDBClient', () => {
         const response = await zerodbClient.vectors.list(projectId);
         
         expect(mockClient.get).toHaveBeenCalledWith(
-          `/public/projects/${projectId}/database/vectors?`
+          `/projects/${projectId}/database/vectors?`
         );
         expect(response).toBe(mockResponse);
       });
@@ -272,7 +272,7 @@ describe('ZeroDBClient', () => {
         await zerodbClient.vectors.list(projectId, 'test-namespace', 10);
         
         expect(mockClient.get).toHaveBeenCalledWith(
-          `/public/projects/${projectId}/database/vectors?namespace=test-namespace&limit=10`
+          `/projects/${projectId}/database/vectors?namespace=test-namespace&limit=10`
         );
       });
 
@@ -284,7 +284,7 @@ describe('ZeroDBClient', () => {
         await zerodbClient.vectors.list(projectId, undefined, 5);
         
         expect(mockClient.get).toHaveBeenCalledWith(
-          `/public/projects/${projectId}/database/vectors?limit=5`
+          `/projects/${projectId}/database/vectors?limit=5`
         );
       });
     });
@@ -307,7 +307,7 @@ describe('ZeroDBClient', () => {
         const response = await zerodbClient.memory.store(projectId, memoryData);
         
         expect(mockClient.post).toHaveBeenCalledWith(
-          `/public/projects/${projectId}/database/memory/store`,
+          `/projects/${projectId}/database/memory/store`,
           memoryData
         );
         expect(response).toBe(mockResponse);
@@ -327,7 +327,7 @@ describe('ZeroDBClient', () => {
         const response = await zerodbClient.memory.search(projectId, searchData);
         
         expect(mockClient.post).toHaveBeenCalledWith(
-          `/public/projects/${projectId}/database/memory/search`,
+          `/projects/${projectId}/database/memory/search`,
           searchData
         );
         expect(response).toBe(mockResponse);
@@ -343,7 +343,7 @@ describe('ZeroDBClient', () => {
         const response = await zerodbClient.memory.list(projectId);
         
         expect(mockClient.get).toHaveBeenCalledWith(
-          `/public/projects/${projectId}/database/memory?`
+          `/projects/${projectId}/database/memory?`
         );
         expect(response).toBe(mockResponse);
       });
@@ -356,7 +356,7 @@ describe('ZeroDBClient', () => {
         await zerodbClient.memory.list(projectId, { limit: 20, offset: 10 });
         
         expect(mockClient.get).toHaveBeenCalledWith(
-          `/public/projects/${projectId}/database/memory?limit=20&offset=10`
+          `/projects/${projectId}/database/memory?limit=20&offset=10`
         );
       });
     });
@@ -376,7 +376,7 @@ describe('ZeroDBClient', () => {
         const response = await zerodbClient.events.publish(projectId, eventData);
         
         expect(mockClient.post).toHaveBeenCalledWith(
-          `/public/projects/${projectId}/database/events/publish`,
+          `/projects/${projectId}/database/events/publish`,
           eventData
         );
         expect(response).toBe(mockResponse);
@@ -392,7 +392,7 @@ describe('ZeroDBClient', () => {
         const response = await zerodbClient.events.list(projectId);
         
         expect(mockClient.get).toHaveBeenCalledWith(
-          `/public/projects/${projectId}/database/events?`
+          `/projects/${projectId}/database/events?`
         );
         expect(response).toBe(mockResponse);
       });
@@ -405,7 +405,7 @@ describe('ZeroDBClient', () => {
         await zerodbClient.events.list(projectId, 'user-activity', 50);
         
         expect(mockClient.get).toHaveBeenCalledWith(
-          `/public/projects/${projectId}/database/events?topic=user-activity&limit=50`
+          `/projects/${projectId}/database/events?topic=user-activity&limit=50`
         );
       });
     });
@@ -417,7 +417,7 @@ describe('ZeroDBClient', () => {
         const eventSource = zerodbClient.events.stream(projectId);
         
         expect(EventSource).toHaveBeenCalledWith(
-          `https://test-api.com/api/v1/public/projects/${projectId}/database/events/stream?`
+          `https://test-api.com/api/v1/projects/${projectId}/database/events/stream?`
         );
         expect(eventSource).toBe(mockEventSource);
       });
@@ -432,7 +432,7 @@ describe('ZeroDBClient', () => {
         const eventSource = zerodbClient.events.stream(projectId, options);
         
         expect(EventSource).toHaveBeenCalledWith(
-          `https://test-api.com/api/v1/public/projects/${projectId}/database/events/stream?topic=user-activity&from_timestamp=2023-01-01T00%3A00%3A00Z`
+          `https://test-api.com/api/v1/projects/${projectId}/database/events/stream?topic=user-activity&from_timestamp=2023-01-01T00%3A00%3A00Z`
         );
       });
 
@@ -522,7 +522,7 @@ describe('ZeroDBClient', () => {
         const response = await zerodbClient.files.upload(projectId, fileData);
         
         expect(mockClient.post).toHaveBeenCalledWith(
-          `/public/projects/${projectId}/database/files/upload`,
+          `/projects/${projectId}/database/files/upload`,
           fileData
         );
         expect(response).toBe(mockResponse);
@@ -538,7 +538,7 @@ describe('ZeroDBClient', () => {
         const response = await zerodbClient.files.list(projectId);
         
         expect(mockClient.get).toHaveBeenCalledWith(
-          `/public/projects/${projectId}/database/files?`
+          `/projects/${projectId}/database/files?`
         );
         expect(response).toBe(mockResponse);
       });
@@ -551,7 +551,7 @@ describe('ZeroDBClient', () => {
         await zerodbClient.files.list(projectId, { limit: 25, offset: 50 });
         
         expect(mockClient.get).toHaveBeenCalledWith(
-          `/public/projects/${projectId}/database/files?limit=25&offset=50`
+          `/projects/${projectId}/database/files?limit=25&offset=50`
         );
       });
     });
@@ -567,7 +567,7 @@ describe('ZeroDBClient', () => {
         const response = await zerodbClient.analytics.usage(projectId);
         
         expect(mockClient.get).toHaveBeenCalledWith(
-          `/public/projects/${projectId}/analytics/usage?`
+          `/projects/${projectId}/analytics/usage?`
         );
         expect(response).toBe(mockResponse);
       });
@@ -580,7 +580,7 @@ describe('ZeroDBClient', () => {
         await zerodbClient.analytics.usage(projectId, 30);
         
         expect(mockClient.get).toHaveBeenCalledWith(
-          `/public/projects/${projectId}/analytics/usage?days=30`
+          `/projects/${projectId}/analytics/usage?days=30`
         );
       });
     });
@@ -594,7 +594,7 @@ describe('ZeroDBClient', () => {
         const response = await zerodbClient.analytics.costs(projectId);
         
         expect(mockClient.get).toHaveBeenCalledWith(
-          `/public/projects/${projectId}/analytics/costs?`
+          `/projects/${projectId}/analytics/costs?`
         );
         expect(response).toBe(mockResponse);
       });
@@ -607,7 +607,7 @@ describe('ZeroDBClient', () => {
         await zerodbClient.analytics.costs(projectId, 7);
         
         expect(mockClient.get).toHaveBeenCalledWith(
-          `/public/projects/${projectId}/analytics/costs?days=7`
+          `/projects/${projectId}/analytics/costs?days=7`
         );
       });
     });
@@ -627,7 +627,7 @@ describe('ZeroDBClient', () => {
         const response = await zerodbClient.analytics.overview(projectId);
         
         expect(mockClient.get).toHaveBeenCalledWith(
-          `/public/projects/${projectId}/analytics`
+          `/projects/${projectId}/analytics`
         );
         expect(response).toBe(mockResponse);
       });

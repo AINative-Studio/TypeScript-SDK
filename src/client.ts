@@ -7,6 +7,7 @@ import { EventEmitter } from 'eventemitter3';
 import { ClientConfig, AuthConfig, RequestOptions, ApiResponse, ApiError } from './types';
 import { ZeroDBClient } from './zerodb';
 import { AgentSwarmClient } from './agent-swarm';
+import { X402Client } from './x402';
 import { AuthManager } from './auth';
 import { 
   AINativeError, 
@@ -26,6 +27,7 @@ export class AINativeClient extends EventEmitter {
   private authManager: AuthManager;
   private _zerodb?: ZeroDBClient;
   private _agentSwarm?: AgentSwarmClient;
+  private _x402?: X402Client;
 
   constructor(config: ClientConfig = {}) {
     super();
@@ -89,6 +91,16 @@ export class AINativeClient extends EventEmitter {
       this._agentSwarm = new AgentSwarmClient(this);
     }
     return this._agentSwarm;
+  }
+
+  /**
+   * Get x402 payment-protocol client (plans, subscribe, subscription status)
+   */
+  get x402(): X402Client {
+    if (!this._x402) {
+      this._x402 = new X402Client(this);
+    }
+    return this._x402;
   }
 
   /**
@@ -256,11 +268,22 @@ export class AINativeClient extends EventEmitter {
     if (error.response) {
       const status = error.response.status;
       const data = error.response.data;
-      const message = data?.detail || data?.message || error.message;
+      // `detail` is normally a string (the backend's global exception
+      // handler flattens a structured HTTPException(detail={...}) down to
+      // a top-level `detail: string` plus sibling keys like `requirements`
+      // — see app/main.py::http_exception_handler). Guard with a typeof
+      // check anyway in case some response is a raw dict error body.
+      const detailMessage = typeof data?.detail === 'string' ? data.detail : undefined;
+      const message = detailMessage || data?.message || error.message;
+      // Carry the raw response body + headers through on every branch so a
+      // typed wrapper (e.g. X402Client) can recover structured fields
+      // (like a 402's `requirements`, or its WWW-Authenticate header)
+      // without re-making the request.
+      const details = { ...data, headers: error.response.headers };
 
       switch (status) {
         case 400:
-          return new ValidationError(message);
+          return new ValidationError(message, details);
         case 401:
           return new AuthenticationError(message);
         case 403:
@@ -276,7 +299,7 @@ export class AINativeClient extends EventEmitter {
         case 503:
           return new ServerError(message, status);
         default:
-          return new AINativeError(message, status.toString(), status);
+          return new AINativeError(message, status.toString(), status, details);
       }
     } else if (error.request) {
       return new NetworkError('No response received from server');

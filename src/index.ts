@@ -8,11 +8,13 @@
 export { AINativeClient } from './client';
 export { ZeroDBClient } from './zerodb';
 export { AgentSwarmClient } from './agent-swarm';
+export { X402Client, parseX402PaymentHeader, parseX402PaymentHeaderOrThrow } from './x402';
 
 // Export types
 export * from './types';
 export * from './types/zerodb';
 export * from './types/agent-swarm';
+export * from './types/x402';
 
 // Export errors
 export * from './errors';

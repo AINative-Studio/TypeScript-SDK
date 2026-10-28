@@ -99,3 +99,25 @@ export class ServerError extends AINativeError {
     this.name = 'ServerError';
   }
 }
+
+/**
+ * A 402 Payment Required response from an x402-protected endpoint (e.g.
+ * `POST /cloud/x402/subscriptions/subscribe`). Carries the structured
+ * payment requirements (amount, asset, network, pay_to, scheme) parsed
+ * from the response, so a caller can hand them straight to a wallet/payer
+ * instead of re-parsing the raw body or header themselves.
+ */
+export class X402PaymentRequiredError extends AINativeError {
+  /** Payment requirements parsed from the response (header and/or JSON body). */
+  public requirements?: Partial<import('./types/x402').X402PaymentRequirements>;
+
+  constructor(
+    message: string = 'Payment required',
+    requirements?: Partial<import('./types/x402').X402PaymentRequirements>,
+    details?: any
+  ) {
+    super(message, 'payment_required', 402, details);
+    this.name = 'X402PaymentRequiredError';
+    this.requirements = requirements;
+  }
+}
