@@ -162,16 +162,29 @@ describe('AINativeClient', () => {
 
   describe('advanced error handling', () => {
     it('should handle rate limit errors', async () => {
-      const mockRequest = client['httpClient'].request as jest.Mock;
-      const error: any = new Error('Rate limited');
-      error.response = {
-        status: 429,
-        data: { message: 'Rate limit exceeded' },
-        headers: { 'retry-after': '60' }
-      };
-      mockRequest.mockRejectedValue(error);
-      
-      await expect(client.get('/test')).rejects.toThrow(RateLimitError);
+      // The client's retry loop honors the real `retry-after` value with a
+      // real setTimeout (client.ts's sleep()) before each retry -- with
+      // this mock rejecting every attempt and retry-after: '60', that's a
+      // genuine 60s wall-clock sleep per retry, deterministically exceeding
+      // Jest's default 10s test timeout. Use fake timers and advance past
+      // each sleep instead of waiting on it for real.
+      jest.useFakeTimers();
+      try {
+        const mockRequest = client['httpClient'].request as jest.Mock;
+        const error: any = new Error('Rate limited');
+        error.response = {
+          status: 429,
+          data: { message: 'Rate limit exceeded' },
+          headers: { 'retry-after': '60' }
+        };
+        mockRequest.mockRejectedValue(error);
+
+        const resultPromise = expect(client.get('/test')).rejects.toThrow(RateLimitError);
+        await jest.runAllTimersAsync();
+        await resultPromise;
+      } finally {
+        jest.useRealTimers();
+      }
     });
 
     it('should handle server errors', async () => {
