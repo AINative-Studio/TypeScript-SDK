@@ -1,7 +1,7 @@
 {
   "name": "@ainative/sdk",
   "type": "module",
-  "version": "3.2.0",
+  "version": "3.2.1",
   "description": "TypeScript/JavaScript SDK for AINative Studio: ZeroDB vector database, Agent Swarm orchestration, and x402 agent payments (USDC micropayments, typed WWW-Authenticate parsing, per-agent wallets).",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
