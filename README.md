@@ -4,13 +4,14 @@
 [![TypeScript](https://img.shields.io/badge/%3C%2F%3E-TypeScript-%230074c1.svg)](http://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Official TypeScript/JavaScript SDK for AINative Studio APIs, providing seamless integration with ZeroDB vector database and Agent Swarm orchestration platform.
+Official TypeScript/JavaScript SDK for AINative Studio: ZeroDB vector database, Agent Swarm orchestration, and [x402](https://github.com/coinbase/x402) agent payments (HTTP 402 USDC micropayments) in one client. Built for AI agents, MCP servers, and vibe-coded apps that need agents to pay for things autonomously.
 
 ## 🚀 Features
 
 - **TypeScript Support** - Full type safety with comprehensive TypeScript definitions
 - **Browser & Node.js** - Works in both browser and server environments
 - **Framework Integrations** - React hooks and Vue composables included
+- **x402 Agent Payments** - Typed client + `WWW-Authenticate: Payment` header parser for HTTP 402 USDC micropayments between agents
 - **Auto-retry & Error Handling** - Built-in retry logic and comprehensive error types
 - **Tree-shakeable** - Only import what you need for optimal bundle size
 - **Real-time Streaming** - Server-Sent Events support for live updates
@@ -320,6 +321,46 @@ const taskStatus = await client.agentSwarm.tasks.status('task-id');
 
 // List swarm tasks
 const tasks = await client.agentSwarm.tasks.list('swarm-id');
+```
+
+### x402 Agent Payments
+
+[x402](https://github.com/coinbase/x402) is the HTTP 402 "Payment Required" micropayment standard — an agent hits a paid endpoint, gets a `402` back with payment requirements, pays in USDC, and retries. `client.x402` is a typed wrapper around AINative's x402 subscription endpoints, so you don't parse the `WWW-Authenticate: Payment` header or the raw 402 body yourself.
+
+```typescript
+import { AINativeClient, X402PaymentRequiredError } from '@ainative/sdk';
+
+const client = new AINativeClient({ apiKey: 'your-api-key' });
+
+// Shop first — no payment required to see what's available
+const { data } = await client.x402.listPlans();
+console.log(data.plans); // [{ id, price_usd, amount, asset, network, pay_to }, ...]
+
+try {
+  // Attempt to subscribe without proof of payment
+  await client.x402.subscribe({ plan_id: 'pro' });
+} catch (error) {
+  if (error instanceof X402PaymentRequiredError) {
+    // error.requirements is already parsed from the real 402 challenge:
+    // { scheme, network, asset, amount, pay_to }
+    const proof = await payWithYourWallet(error.requirements);
+
+    // Retry with proof — resolves normally this time
+    const subscription = await client.x402.subscribe({
+      plan_id: 'pro',
+      payment_proof: proof,
+    });
+  }
+}
+```
+
+Also exported standalone, if you just need to parse a raw `WWW-Authenticate: Payment` header yourself:
+
+```typescript
+import { parseX402PaymentHeader } from '@ainative/sdk';
+
+const requirements = parseX402PaymentHeader(response.headers.get('www-authenticate'));
+// { scheme: 'exact', network: 'circle', asset: 'USDC', amount: '5.00', pay_to: '0x...' }
 ```
 
 ### Error Handling
